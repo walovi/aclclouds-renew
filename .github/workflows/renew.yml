@@ -18,7 +18,7 @@ jobs:
       - name: 🔒 拉取私有仓库脚本
         uses: actions/checkout@v6
         with:
-          repository: 你的GitHub用户名/aclclouds_renew_private
+          repository: ${{ github.repository_owner }}/aclclouds_renew_private
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
           path: private-scripts
 
