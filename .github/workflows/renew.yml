@@ -34,12 +34,23 @@ jobs:
           pip install requests seleniumbase
           seleniumbase install chromedriver
 
-      - name: 🌐 设置sing-box代理转发
+      - name: 🌐 配置sing-box代理
         continue-on-error: true
         env:
           NODE_LINK: ${{ secrets.NODE_LINK }}
         run: |
-          bash <(wget -qO- https://main.ssss.nyc.mn/setup_proxy.sh)
+          # 手动安装sing-box避免第三方脚本报错
+          LATEST_VERSION=$(curl -s https://api.github.com/repos/SagerNet/sing-box/releases/latest | grep tag_name | cut -d '"' -f4)
+          wget -q https://github.com/SagerNet/sing-box/releases/download/$LATEST_VERSION/sing-box-${LATEST_VERSION#v}-linux-amd64.tar.gz
+          tar -xzf sing-box-*-linux-amd64.tar.gz
+          sudo mv sing-box-*/sing-box /usr/local/bin/
+          # 配置并启动
+          mkdir -p /etc/sing-box
+          echo $NODE_LINK | base64 -d > /etc/sing-box/config.json
+          nohup sing-box run -c /etc/sing-box/config.json > /tmp/sing-box.log 2>&1 &
+          sleep 5
+          # 验证代理生效
+          curl -x socks5://127.0.0.1:1080 https://api.ip.sb/ip
 
       - name: 🚀 运行私库续期脚本
         env:
