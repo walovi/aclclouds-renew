@@ -2,7 +2,7 @@ name: Auto-Renew-ACL
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 */3 * *' # 每隔3天 12点(UTC 2点) 运行
+    - cron: '0 2 */3 * *' # 每隔3天 北京时间12点(UTC 2点) 运行
 
 jobs:
   Renew-acl:
@@ -15,10 +15,10 @@ jobs:
       - name: 📥 下载公库代码
         uses: actions/checkout@v6
 
-      - name: 📥 下载私库脚本代码
+      - name: 🔒 拉取私有仓库脚本
         uses: actions/checkout@v6
         with:
-          repository: ${{ github.repository_owner }}/aclclouds_renew_private
+          repository: 你的GitHub用户名/aclclouds_renew_private
           token: ${{ secrets.PRIVATE_REPO_TOKEN }}
           path: private-scripts
 
@@ -41,7 +41,7 @@ jobs:
         run: |
           bash <(wget -qO- https://main.ssss.nyc.mn/setup_proxy.sh)
           
-      - name: 🚀 运行续期脚本
+      - name: 🚀 运行私库续期脚本
         env:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
